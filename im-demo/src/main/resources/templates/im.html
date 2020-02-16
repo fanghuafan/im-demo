@@ -1,0 +1,390 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: htmlhead" th:with="title='Hello'"></head>
+
+<body>
+<div th:replace="layout :: navbar">(navbar)</div>
+
+<div class="container">
+    <div class="starter-template">
+        <input type="hidden" id="chatRoomId" th:value="${chatRoomId}">
+        <input type="hidden" id="token" th:value="${token}">
+        <input type="hidden" id="userName" th:value="${userNmae}">
+        <h3>（<font style="color: green;">[[${userNmae}]] 正在聊天...</font>）聊天室：<font style="color: red;"
+                                                                                  th:text="${chatRoomName}"></font></h3>
+        <div id="message_box" style="overflow: auto; margin:auto;background: beige; width: 700px; height: 500px;" >
+            <ul style="overflow: auto; text-align: left;list-style: none;">
+            </ul>
+        </div>
+        <textarea style="width: 700px;height: 100px;resize:none;" id="new_message" placeholder="请输入新消息"></textarea>
+        <div style="margin-top: 15px;">
+            <input type="button" value="取消" id="cancel_message"/>
+            <input onclick="sendChatRoomMessage()" type="button"
+                   style="margin-left: 10px;background: cornflowerblue; color: aliceblue;" value="发送消息"
+                   id="send_message"/>
+        </div>
+    </div>
+</div>
+
+<div th:include="layout :: footer" id="footer">(footer)</div>
+
+<script th:src="@{/webjars/jquery/2.0.3/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/3.0.3/js/bootstrap.min.js}"></script>
+<!-- 压缩版 -->
+<!-- HTTPS -->
+<script src="https://cdn.ronghub.com/RongIMLib-2.5.4.js"></script>
+<!--<script src="/static/js/chatroom-messagetyps.js"></script>-->
+<script type="application/javascript">
+    (function (global, factory) {
+        if (typeof exports === 'object' && typeof module !== 'undefined') {
+            module.exports = factory();
+        } else if (typeof define === 'function' && define.amd) {
+            define(factory);
+        } else {
+            var messageTypes = factory();
+            global.RongMessageTypes = global.RongMessageTypes || {};
+            global.RongMessageTypes.chatroom = messageTypes;
+        }
+    })(window, function () {
+
+        return {
+            "ChatroomStart": {
+                "name": "RC:Chatroom:Start",
+                "priority": 4,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "time": "1525415951135",
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomEnd": {
+                "name": "RC:Chatroom:End ",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "duration": 3600,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomSummary": {
+                "name": "RC:Chatroom:Summary",
+                "priority": 2,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "online": 800,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomFollow": {
+                "name": "RC:Chatroom:Follow",
+                "priority": 3,
+                "channel": "App Client",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "rank": 1,
+                    "level": 3,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomLike": {
+                "name": "RC:Chatroom:Like",
+                "priority": 1,
+                "channel": "App Client",
+                "version": "1.0.0",
+                "proto": {
+                    "counts": 5,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomGift": {
+                "name": "RC:Chatroom:Gift",
+                "priority": 5,
+                "channel": "App Client",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "G008",
+                    "number": 530,
+                    "total": 900,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomBarrage": {
+                "name": "RC:Chatroom:Barrage",
+                "priority": 5,
+                "channel": "App Client",
+                "version": "1.0.0",
+                "proto": {
+                    "type": "D201801",
+                    "content": "hellowrold",
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomWelcome": {
+                "name": "RC:Chatroom:Welcome",
+                "priority": 3,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "counts": 10,
+                    "rank": 3,
+                    "level": 1,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomAdminAdd": {
+                "name": "RC:Chatroom:Admin:Add",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "counts": 10,
+                    "level": 1,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomAdminRemove": {
+                "name": "RC:Chatroom:Admin:Remove",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomUserBlock": {
+                "name": "RC:Chatroom:User:Block",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "duration": 3600,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomUserUnBlock": {
+                "name": "RC:Chatroom:User:UnBlock",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomUserBan": {
+                "name": "RC:Chatroom:User:Ban",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "duration": 3600,
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomUserUnBan": {
+                "name": "RC:Chatroom:User:UnBan",
+                "priority": 1,
+                "channel": "App Server",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "extra": "附加信息"
+                }
+            },
+            "ChatroomUserQuit": {
+                "name": "RC:Chatroom:User:Quit",
+                "priority": 1,
+                "channel": "App Client",
+                "version": "1.0.0",
+                "proto": {
+                    "id": "u2018",
+                    "extra": "附加信息"
+                }
+            }
+        };
+    });
+
+    createChatRoom()
+
+    function createChatRoom() {
+        var appkey = "8luwapkv84jul"
+        RongIMLib.RongIMClient.init(appkey);
+
+        // 引入 `chatroom-messagetyps.js` 可获取命名空间 `RongMessageTypes`
+        var chatroomMessages = RongMessageTypes.chatroom;
+
+        // 设置消息类型
+        var im = RongIMClient.getInstance();
+        im.registerMessageTypes(chatroomMessages);
+
+        RongIMClient.setConnectionStatusListener({
+            onChanged: function (status) {
+                // status 标识当前连接状态
+                switch (status) {
+                    case RongIMLib.ConnectionStatus.CONNECTED:
+                        console.log('链接成功');
+                        joinChatRoom()
+                        received()
+                        break;
+                    case RongIMLib.ConnectionStatus.CONNECTING:
+                        console.log('正在链接');
+                        break;
+                    case RongIMLib.ConnectionStatus.DISCONNECTED:
+                        console.log('断开连接');
+                        break;
+                    case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+                        console.log('其他设备登录, 本端被踢');
+                        break;
+                    case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
+                        console.log('域名不正确, 请至开发者后台查看安全域名配置');
+                        break;
+                    case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+                        console.log('网络不可用, 此时可调用 reconnect 进行重连');
+                        break;
+                    default:
+                        console.log('链接状态为', status);
+                        break;
+                }
+            }
+        });
+
+        var token = $("#token").val();
+        console.log("token ====", token)
+        RongIMClient.connect(token, {
+            onSuccess: function (userId) {
+                console.log('Connect successfully. ' + userId);
+            },
+            onTokenIncorrect: function () {
+                console.log('token 无效');
+            },
+            onError: function (errorCode) {
+                var info = '';
+                switch (errorCode) {
+                    case RongIMLib.ErrorCode.TIMEOUT:
+                        info = '超时';
+                        break;
+                    case RongIMLib.ConnectionState.UNACCEPTABLE_PAROTOCOL_VERSION:
+                        info = '不可接受的协议版本';
+                        break;
+                    case RongIMLib.ConnectionState.IDENTIFIER_REJECTED:
+                        info = 'appkey不正确';
+                        break;
+                    case RongIMLib.ConnectionState.SERVER_UNAVAILABLE:
+                        info = '服务器不可用';
+                        break;
+                }
+                console.log("------------", info);
+            }
+        });
+
+
+    }
+
+    // 加入聊天室
+    function joinChatRoom() {
+        var chatRoomId = $("#chatRoomId").val();
+        console.log("--------chatRoomId----", chatRoomId);
+        var count = 10;
+
+        RongIMClient.getInstance().joinChatRoom(chatRoomId, count, {
+            onSuccess: function () {
+                console.log('加入聊天室成功');
+            },
+            onError: function (error) {
+                console.log('加入聊天室失败', error);
+            }
+        });
+    }
+
+    // 接收信息
+    function received() {
+        // 消息监听器
+        RongIMClient.setOnReceiveMessageListener({
+            // 接收到的消息
+            onReceived: function (message) {
+                switch (message.messageType) {
+                    case RongIMClient.MessageType.ChatroomBarrage:
+                        console.log("聊天室消息：", message);
+                        $("#message_box ul").append("<li style='background-color: beige; margin-top: 5px;color: blue;'>" + message.content.extra + " > " + message.content.content + "</li>")
+                        break;
+                }
+            }
+        });
+    }
+
+    // 发送聊天室信息
+    function sendChatRoomMessage() {
+        //消息发送示例
+        var ChatroomBarrage = RongIMClient.RegisterMessage.ChatroomBarrage;
+
+        var msg = new ChatroomBarrage({
+            type: 20200202,
+            content: $("#new_message").val(),
+            extra: $("#userName").val()
+        });
+
+        var chatroomType = RongIMLib.ConversationType.CHATROOM;
+        var chatRoomId = $("#chatRoomId").val();
+        var im = RongIMClient.getInstance();
+        im.sendMessage(chatroomType, chatRoomId, msg, {
+            onSuccess: function (message) {
+                console.log("发送聊天室信息成功：", message);
+                $("#message_box ul").append("<li style='background:-color beige;margin-right:35px; text-align: right; margin-top: 5px;color: orangered;'>" + message.content.content + " < " + $("#userName").val()  + "</li>")
+            },
+            onError: function (error) {
+                console.log(error);
+            }
+        });
+
+
+        // var content = $("#new_message").val();
+        // var userName = $("#userName").val();
+        // if(content.trim() == "") {
+        //     alert("消息内容为空")
+        //     return;
+        // }
+        // //消息发送示例
+        // var ChatroomBarrage = RongIMClient.RegisterMessage.ChatroomBarrage;
+        //
+        // var msg = new ChatroomBarrage({
+        //     type:20200202,
+        //     content: content,
+        //     extra: content
+        // });
+        //
+        // // var ChatroomBarrage = RongIMClient.ChatroomBarrage;
+        // //
+        // // var msg = new ChatroomBarrage({
+        // //     content: content,
+        // //     senderName: userName,
+        // //     senderPortrait: content
+        // // });
+        //
+        // var chatroomType = RongIMLib.ConversationType.CHATROOM;
+        // var chatroomId = $("#chatRoomId").val();
+        // var im = RongIMClient.getInstance();
+        // im.sendMessage(chatroomType, chatroomId, msg, {
+        //     onSuccess: function(message) {
+        //         console.log("发送结果", message);
+        //         alert("发送成功")
+        //     },
+        //     onError: function(error) {
+        //         console.log(error);
+        //         alert("发送失败")
+        //     }
+        // });
+    }
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+debug: true
+
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/im?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: WEB-INF/**
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.karl.imdemo
+
+#showSql
+logging:
+  level:
+    com:
+      example:
+        mapper : debug
+
+rongcloud:
+  appKey: 8luwapkv84jul
+  appSecret: Eraxim1iVh
